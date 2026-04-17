@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-import { apiFetch } from "../lib/api";
+import { apiFetch, clearAuthToken, setAuthToken } from "../lib/api";
 
 const AuthContext = createContext(null);
 
@@ -14,6 +14,7 @@ export function AuthProvider({ children }) {
         const response = await apiFetch("/api/auth/me");
         setAuth({ admin: response.admin });
       } catch (_error) {
+        clearAuthToken();
         setAuth(null);
       } finally {
         setLoading(false);
@@ -34,6 +35,8 @@ export function AuthProvider({ children }) {
           body: JSON.stringify({ identifier, password, remember }),
         });
 
+        setAuthToken(response.token || "");
+
         setAuth({ admin: response.admin });
         return response;
       },
@@ -44,6 +47,7 @@ export function AuthProvider({ children }) {
           });
         } catch (_error) {
         } finally {
+          clearAuthToken();
           setAuth(null);
         }
       },

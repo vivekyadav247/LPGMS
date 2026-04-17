@@ -21,7 +21,7 @@ router.post(
     const result = await loginAdmin(payload);
     setAuthCookie(res, result.token, payload.remember);
 
-    res.json({ admin: result.admin });
+    res.json({ admin: result.admin, token: result.token });
   }),
 );
 
