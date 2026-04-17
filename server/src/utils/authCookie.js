@@ -31,11 +31,12 @@ function getAuthTokenFromRequest(req) {
 }
 
 function serializeAuthCookie(token, maxAgeMs) {
+  const sameSite = env.NODE_ENV === "production" ? "None" : "Lax";
   const parts = [
     `${env.AUTH_COOKIE_NAME}=${token ? encodeURIComponent(token) : ""}`,
     "Path=/",
     "HttpOnly",
-    "SameSite=Lax",
+    `SameSite=${sameSite}`,
   ];
 
   if (typeof maxAgeMs === "number") {
