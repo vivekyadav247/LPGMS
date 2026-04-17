@@ -16,9 +16,25 @@ const AppError = require("./utils/AppError");
 const app = express();
 app.set("trust proxy", env.NODE_ENV === "production" ? 1 : false);
 
-const allowedOrigins = env.CLIENT_URL.split(",")
-  .map((value) => value.trim())
-  .filter(Boolean);
+function normalizeOrigin(value) {
+  const raw = String(value || "").trim();
+
+  if (!raw) {
+    return "";
+  }
+
+  try {
+    return new URL(raw).origin.toLowerCase();
+  } catch (_error) {
+    return raw.replace(/\/+$/, "").toLowerCase();
+  }
+}
+
+const allowedOrigins = new Set(
+  env.CLIENT_URL.split(",")
+    .map((value) => normalizeOrigin(value))
+    .filter(Boolean),
+);
 const localhostOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i;
 
 const corsOptions = {
@@ -27,11 +43,16 @@ const corsOptions = {
       return callback(null, true);
     }
 
-    if (allowedOrigins.includes(origin)) {
+    const normalizedOrigin = normalizeOrigin(origin);
+
+    if (allowedOrigins.has(normalizedOrigin)) {
       return callback(null, true);
     }
 
-    if (env.NODE_ENV !== "production" && localhostOriginPattern.test(origin)) {
+    if (
+      env.NODE_ENV !== "production" &&
+      localhostOriginPattern.test(normalizedOrigin)
+    ) {
       return callback(null, true);
     }
 
