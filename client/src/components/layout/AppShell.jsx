@@ -53,12 +53,14 @@ export function AppShell({ children }) {
       <div className="mx-auto flex max-w-[1440px] gap-4 px-3 py-3 sm:px-5 lg:gap-6 lg:px-6 lg:py-4">
         <aside className="surface-ink hidden min-h-[calc(100vh-2rem)] w-[300px] flex-col overflow-hidden px-6 py-6 lg:flex">
           <div className="rounded-[1.75rem] border border-white/10 bg-white/10 p-5">
-            <img
-              src="/LPGMS_Logo.png"
-              alt="LPGMS logo"
-              className="h-24 w-auto"
-              loading="eager"
-            />
+            <div className="inline-flex rounded-2xl bg-white p-2 shadow-panel">
+              <img
+                src="/LPGMS_Logo.png"
+                alt="LPGMS logo"
+                className="h-20 w-auto"
+                loading="eager"
+              />
+            </div>
           </div>
 
           <nav className="mt-6 space-y-2">
@@ -115,9 +117,9 @@ export function AppShell({ children }) {
                       {currentItem?.label || "Operations"}
                     </h2>
                     <img
-                      src="/LPGMS_Logo.png"
-                      alt="LPGMS logo"
-                      className="h-14 w-24 shrink-0 rounded-xl border border-accent/15 bg-white object-contain p-1.5 shadow-panel lg:hidden"
+                      src="/lpgms-icon.png"
+                      alt="LPGMS icon"
+                      className="h-12 w-12 shrink-0 rounded-xl border border-accent/20 bg-white object-cover p-1 shadow-panel lg:hidden"
                       loading="eager"
                     />
                   </div>

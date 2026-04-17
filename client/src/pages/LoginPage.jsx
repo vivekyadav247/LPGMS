@@ -42,12 +42,14 @@ export function LoginPage() {
       <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-6xl items-center gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="surface-ink hidden overflow-hidden px-8 py-8 lg:block xl:px-10 xl:py-10">
           <div className="flex items-center">
-            <img
-              src="/LPGMS_Logo.png"
-              alt="LPGMS logo"
-              className="h-20 w-auto"
-              loading="eager"
-            />
+            <div className="inline-flex rounded-2xl bg-white p-2 shadow-panel">
+              <img
+                src="/LPGMS_Logo.png"
+                alt="LPGMS logo"
+                className="h-16 w-auto"
+                loading="eager"
+              />
+            </div>
           </div>
 
           <h1 className="mt-8 max-w-xl text-5xl font-bold leading-tight">
