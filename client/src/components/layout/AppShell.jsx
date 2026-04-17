@@ -117,9 +117,9 @@ export function AppShell({ children }) {
                       {currentItem?.label || "Operations"}
                     </h2>
                     <img
-                      src="/lpgms-icon.png"
-                      alt="LPGMS icon"
-                      className="h-12 w-12 shrink-0 rounded-xl border border-accent/20 bg-white object-cover p-1 shadow-panel lg:hidden"
+                      src="/LPGMS_Logo.png"
+                      alt="LPGMS logo"
+                      className="h-12 w-16 shrink-0 object-contain lg:hidden"
                       loading="eager"
                     />
                   </div>
