@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LockKeyhole, ShieldCheck, UserRound } from "lucide-react";
+import { LockKeyhole, UserRound } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -41,17 +41,13 @@ export function LoginPage() {
     <div className="min-h-screen bg-shell px-4 py-6 sm:px-5 sm:py-8">
       <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-6xl items-center gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="surface-ink hidden overflow-hidden px-8 py-8 lg:block xl:px-10 xl:py-10">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center">
             <img
-              src="/lpgms-logo.svg"
+              src="/LPGMS_Logo.png"
               alt="LPGMS logo"
-              className="h-14 w-auto"
+              className="h-20 w-auto"
               loading="eager"
             />
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-              <ShieldCheck size={16} />
-              Secure access
-            </div>
           </div>
 
           <h1 className="mt-8 max-w-xl text-5xl font-bold leading-tight">
@@ -94,9 +90,9 @@ export function LoginPage() {
           <div className="mb-6">
             <div className="mb-4 flex justify-center lg:hidden">
               <img
-                src="/lpgms-logo.svg"
+                src="/LPGMS_Logo.png"
                 alt="LPGMS logo"
-                className="h-16 w-auto"
+                className="h-20 w-auto"
                 loading="eager"
               />
             </div>
