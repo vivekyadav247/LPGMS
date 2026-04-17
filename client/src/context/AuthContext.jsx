@@ -1,6 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-import { apiFetch, clearAuthToken, setAuthToken } from "../lib/api";
+import {
+  apiFetch,
+  clearAuthToken,
+  getAuthToken,
+  setAuthToken,
+} from "../lib/api";
 
 const AuthContext = createContext(null);
 
@@ -10,6 +15,14 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     async function verify() {
+      const token = getAuthToken();
+
+      if (!token) {
+        setAuth(null);
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await apiFetch("/api/auth/me");
         setAuth({ admin: response.admin });
