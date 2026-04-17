@@ -6,26 +6,44 @@ const AdminUser = require("../models/AdminUser");
 const AppError = require("../utils/AppError");
 
 function sanitizeAdmin(admin) {
+  const resolvedId = admin.id || admin._id || "env-admin";
   return {
-    id: String(admin._id),
+    id: String(resolvedId),
     loginId: admin.loginId || "",
     name: admin.name,
-    email: admin.email,
-    phone: admin.phone,
+    email: admin.email || "",
+    phone: admin.phone || "",
   };
 }
 
-function createToken(admin) {
+function createToken(admin, source = "db") {
+  const resolvedId = admin.id || admin._id || "env-admin";
   return jwt.sign(
     {
-      sub: String(admin._id),
+      sub: String(resolvedId),
       name: admin.name,
+      loginId: admin.loginId || "",
+      email: admin.email || "",
+      phone: admin.phone || "",
+      source,
     },
     env.JWT_SECRET,
     {
       expiresIn: env.JWT_EXPIRES_IN || "7d",
     },
   );
+}
+
+function getEnvAdminProfile() {
+  return {
+    id: "env-admin",
+    loginId: String(env.ADMIN_ID || "LPGADMIN")
+      .trim()
+      .toLowerCase(),
+    name: env.ADMIN_NAME || "LPG Admin",
+    email: (env.ADMIN_EMAIL || "").toLowerCase(),
+    phone: env.ADMIN_PHONE || "",
+  };
 }
 
 async function ensureAdminUser() {
@@ -38,14 +56,24 @@ async function ensureAdminUser() {
   const normalizedLoginId = String(env.ADMIN_ID || "LPGADMIN")
     .trim()
     .toLowerCase();
+  const normalizedName = env.ADMIN_NAME || "LPG Admin";
+  const normalizedEmail = (env.ADMIN_EMAIL || "").toLowerCase();
+  const normalizedPhone = env.ADMIN_PHONE || "";
+  const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, 12);
 
   if (existing) {
+    const isPasswordSynced = await bcrypt.compare(
+      env.ADMIN_PASSWORD,
+      existing.passwordHash || "",
+    );
+
     const needsUpdate =
       !existing.loginId ||
       existing.loginId !== normalizedLoginId ||
-      existing.name !== (env.ADMIN_NAME || "LPG Admin") ||
-      existing.email !== (env.ADMIN_EMAIL || "").toLowerCase() ||
-      existing.phone !== (env.ADMIN_PHONE || "");
+      existing.name !== normalizedName ||
+      existing.email !== normalizedEmail ||
+      existing.phone !== normalizedPhone ||
+      !isPasswordSynced;
 
     if (!needsUpdate) {
       return existing;
@@ -53,27 +81,27 @@ async function ensureAdminUser() {
 
     await AdminUser.findByIdAndUpdate(existing._id, {
       loginId: normalizedLoginId,
-      name: env.ADMIN_NAME || "LPG Admin",
-      email: (env.ADMIN_EMAIL || "").toLowerCase(),
-      phone: env.ADMIN_PHONE || "",
+      name: normalizedName,
+      email: normalizedEmail,
+      phone: normalizedPhone,
+      passwordHash,
     });
 
     return {
       ...existing,
       loginId: normalizedLoginId,
-      name: env.ADMIN_NAME || "LPG Admin",
-      email: (env.ADMIN_EMAIL || "").toLowerCase(),
-      phone: env.ADMIN_PHONE || "",
+      name: normalizedName,
+      email: normalizedEmail,
+      phone: normalizedPhone,
+      passwordHash,
     };
   }
 
-  const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, 12);
-
   const admin = await AdminUser.create({
     loginId: normalizedLoginId,
-    name: env.ADMIN_NAME || "LPG Admin",
-    email: (env.ADMIN_EMAIL || "").toLowerCase(),
-    phone: env.ADMIN_PHONE || "",
+    name: normalizedName,
+    email: normalizedEmail,
+    phone: normalizedPhone,
     passwordHash,
   });
 
@@ -122,15 +150,32 @@ async function syncAdminUserFromEnv() {
 }
 
 async function loginAdmin({ identifier, password }) {
-  await ensureAdminUser();
+  const trimmedIdentifier = identifier.trim();
+  const normalized = trimmedIdentifier.toLowerCase();
+  const envAdmin = getEnvAdminProfile();
+  const isEnvIdentifierMatch =
+    normalized === envAdmin.loginId ||
+    (envAdmin.email && normalized === envAdmin.email) ||
+    (envAdmin.phone && trimmedIdentifier === envAdmin.phone);
 
-  const normalized = identifier.trim().toLowerCase();
+  if (
+    env.ADMIN_PASSWORD &&
+    isEnvIdentifierMatch &&
+    password === env.ADMIN_PASSWORD
+  ) {
+    return {
+      token: createToken(envAdmin, "env"),
+      admin: sanitizeAdmin(envAdmin),
+    };
+  }
+
+  await ensureAdminUser();
 
   const admin = await AdminUser.findOne({
     $or: [
       { loginId: normalized },
       { email: normalized },
-      { phone: identifier.trim() },
+      { phone: trimmedIdentifier },
     ],
   });
 
@@ -157,7 +202,7 @@ async function loginAdmin({ identifier, password }) {
       await admin.save();
 
       return {
-        token: createToken(admin),
+        token: createToken(admin, "db"),
         admin: sanitizeAdmin(admin),
       };
     }
@@ -166,12 +211,13 @@ async function loginAdmin({ identifier, password }) {
   }
 
   return {
-    token: createToken(admin),
+    token: createToken(admin, "db"),
     admin: sanitizeAdmin(admin),
   };
 }
 
 module.exports = {
+  getEnvAdminProfile,
   ensureAdminUser,
   loginAdmin,
   sanitizeAdmin,

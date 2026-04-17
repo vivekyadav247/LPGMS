@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const env = require("../config/env");
 const AdminUser = require("../models/AdminUser");
+const { getEnvAdminProfile } = require("../services/authService");
 const AppError = require("../utils/AppError");
 const asyncHandler = require("../utils/asyncHandler");
 const { getAuthTokenFromRequest } = require("../utils/authCookie");
@@ -14,6 +15,21 @@ const authMiddleware = asyncHandler(async (req, _res, next) => {
   }
 
   const decoded = jwt.verify(token, env.JWT_SECRET);
+
+  if (decoded?.source === "env" || String(decoded?.sub || "") === "env-admin") {
+    const admin = getEnvAdminProfile();
+    req.user = {
+      id: admin.id,
+      name: admin.name,
+      email: admin.email,
+      phone: admin.phone,
+      loginId: admin.loginId,
+    };
+
+    next();
+    return;
+  }
+
   const admin = await AdminUser.findById(decoded.sub).lean();
 
   if (!admin) {
