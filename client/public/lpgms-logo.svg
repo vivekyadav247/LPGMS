@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-labelledby="logoTitle logoDesc">
+  <title id="logoTitle">LPGMS Logo</title>
+  <desc id="logoDesc">Red LPG cylinder with LPGMS text in white.</desc>
+  <g transform="translate(120 48)">
+    <rect x="244" y="18" width="192" height="56" rx="24" fill="#e10600" />
+    <rect x="274" y="74" width="132" height="68" rx="22" fill="#e10600" />
+    <rect x="308" y="94" width="64" height="24" rx="10" fill="#ffffff" />
+    <rect x="196" y="122" width="288" height="546" rx="120" fill="#e10600" />
+    <path d="M232 182c-24 16-36 44-36 84v286c0 34 10 58 30 74" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" opacity="0.95" />
+    <path d="M222 658c72 24 166 24 238 0" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" opacity="0.95" />
+    <ellipse cx="340" cy="208" rx="174" ry="66" fill="#e10600" />
+  </g>
+
+  <g transform="rotate(-4 400 430)">
+    <text
+      x="402"
+      y="446"
+      text-anchor="middle"
+      font-size="148"
+      font-family="Arial Black, Segoe UI, sans-serif"
+      font-style="italic"
+      font-weight="900"
+      fill="#ffffff"
+      stroke="#e10600"
+      stroke-width="22"
+      paint-order="stroke"
+      letter-spacing="2"
+    >
+      LPGMS
+    </text>
+  </g>
+</svg>

@@ -41,9 +41,17 @@ export function LoginPage() {
     <div className="min-h-screen bg-shell px-4 py-6 sm:px-5 sm:py-8">
       <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-6xl items-center gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="surface-ink hidden overflow-hidden px-8 py-8 lg:block xl:px-10 xl:py-10">
-          <div className="inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-            <ShieldCheck size={16} />
-            LPGMS
+          <div className="flex items-center gap-3">
+            <img
+              src="/lpgms-logo.svg"
+              alt="LPGMS logo"
+              className="h-14 w-auto"
+              loading="eager"
+            />
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
+              <ShieldCheck size={16} />
+              Secure access
+            </div>
           </div>
 
           <h1 className="mt-8 max-w-xl text-5xl font-bold leading-tight">
@@ -84,6 +92,14 @@ export function LoginPage() {
 
         <Card className="mx-auto w-full max-w-md">
           <div className="mb-6">
+            <div className="mb-4 flex justify-center lg:hidden">
+              <img
+                src="/lpgms-logo.svg"
+                alt="LPGMS logo"
+                className="h-16 w-auto"
+                loading="eager"
+              />
+            </div>
             <div className="inline-flex rounded-full border border-accent/20 bg-accent/[0.08] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">
               Admin login
             </div>
