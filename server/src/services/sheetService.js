@@ -727,6 +727,13 @@ async function finalizeSheetAfterMutation({
   sheetName,
   headers,
 }) {
+  await normalizeDataRowsFormatting({
+    sheets,
+    sheetId: sheetMeta?.sheetId,
+    headers,
+    sheetName,
+  });
+
   await appendTotalsRow({
     sheets,
     sheetName,
@@ -746,6 +753,58 @@ async function finalizeSheetAfterMutation({
     sheetId: sheetMeta?.sheetId,
     headers,
     numericHeaders: getNumericHeadersForSheet(sheetName),
+  });
+}
+
+async function normalizeDataRowsFormatting({
+  sheets,
+  sheetId,
+  headers,
+  sheetName,
+}) {
+  if (sheetId === undefined) {
+    return;
+  }
+
+  const lastDataRow = await getLastUsedRow(sheets, sheetName);
+
+  if (lastDataRow <= 1) {
+    return;
+  }
+
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId: env.GOOGLE_SHEETS_ID,
+    requestBody: {
+      requests: [
+        {
+          repeatCell: {
+            range: {
+              sheetId,
+              startRowIndex: 1,
+              endRowIndex: lastDataRow,
+              startColumnIndex: 0,
+              endColumnIndex: headers.length,
+            },
+            cell: {
+              userEnteredFormat: {
+                backgroundColor: {
+                  red: 1,
+                  green: 1,
+                  blue: 1,
+                },
+                textFormat: {
+                  bold: false,
+                },
+                verticalAlignment: "MIDDLE",
+                wrapStrategy: "CLIP",
+              },
+            },
+            fields:
+              "userEnteredFormat(backgroundColor,textFormat,verticalAlignment,wrapStrategy)",
+          },
+        },
+      ],
+    },
   });
 }
 

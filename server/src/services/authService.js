@@ -5,6 +5,24 @@ const env = require("../config/env");
 const AdminUser = require("../models/AdminUser");
 const AppError = require("../utils/AppError");
 
+function stripWrappingQuotes(value) {
+  return String(value || "")
+    .trim()
+    .replace(/^['\"]|['\"]$/g, "");
+}
+
+function normalizeIdentifier(value) {
+  return stripWrappingQuotes(value).toLowerCase();
+}
+
+function normalizePhone(value) {
+  return stripWrappingQuotes(value);
+}
+
+function getEnvAdminPassword() {
+  return stripWrappingQuotes(env.ADMIN_PASSWORD || "");
+}
+
 function sanitizeAdmin(admin) {
   const resolvedId = admin.id || admin._id || "env-admin";
   return {
@@ -37,33 +55,30 @@ function createToken(admin, source = "db") {
 function getEnvAdminProfile() {
   return {
     id: "env-admin",
-    loginId: String(env.ADMIN_ID || "LPGADMIN")
-      .trim()
-      .toLowerCase(),
-    name: env.ADMIN_NAME || "LPG Admin",
-    email: (env.ADMIN_EMAIL || "").toLowerCase(),
-    phone: env.ADMIN_PHONE || "",
+    loginId: normalizeIdentifier(env.ADMIN_ID || "LPGADMIN"),
+    name: stripWrappingQuotes(env.ADMIN_NAME || "LPG Admin"),
+    email: normalizeIdentifier(env.ADMIN_EMAIL || ""),
+    phone: normalizePhone(env.ADMIN_PHONE || ""),
   };
 }
 
 async function ensureAdminUser() {
   const existing = await AdminUser.findOne().lean();
+  const envPassword = getEnvAdminPassword();
 
-  if (!env.ADMIN_PASSWORD) {
+  if (!envPassword) {
     return existing || null;
   }
 
-  const normalizedLoginId = String(env.ADMIN_ID || "LPGADMIN")
-    .trim()
-    .toLowerCase();
-  const normalizedName = env.ADMIN_NAME || "LPG Admin";
-  const normalizedEmail = (env.ADMIN_EMAIL || "").toLowerCase();
-  const normalizedPhone = env.ADMIN_PHONE || "";
-  const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, 12);
+  const normalizedLoginId = normalizeIdentifier(env.ADMIN_ID || "LPGADMIN");
+  const normalizedName = stripWrappingQuotes(env.ADMIN_NAME || "LPG Admin");
+  const normalizedEmail = normalizeIdentifier(env.ADMIN_EMAIL || "");
+  const normalizedPhone = normalizePhone(env.ADMIN_PHONE || "");
+  const passwordHash = await bcrypt.hash(envPassword, 12);
 
   if (existing) {
     const isPasswordSynced = await bcrypt.compare(
-      env.ADMIN_PASSWORD,
+      envPassword,
       existing.passwordHash || "",
     );
 
@@ -109,21 +124,21 @@ async function ensureAdminUser() {
 }
 
 async function syncAdminUserFromEnv() {
-  if (!env.ADMIN_PASSWORD) {
+  const envPassword = getEnvAdminPassword();
+
+  if (!envPassword) {
     throw new AppError(
       "ADMIN_PASSWORD is required to seed or reset the admin account",
       400,
     );
   }
 
-  const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, 12);
+  const passwordHash = await bcrypt.hash(envPassword, 12);
   const update = {
-    loginId: String(env.ADMIN_ID || "LPGADMIN")
-      .trim()
-      .toLowerCase(),
-    name: env.ADMIN_NAME || "LPG Admin",
-    email: (env.ADMIN_EMAIL || "").toLowerCase(),
-    phone: env.ADMIN_PHONE || "",
+    loginId: normalizeIdentifier(env.ADMIN_ID || "LPGADMIN"),
+    name: stripWrappingQuotes(env.ADMIN_NAME || "LPG Admin"),
+    email: normalizeIdentifier(env.ADMIN_EMAIL || ""),
+    phone: normalizePhone(env.ADMIN_PHONE || ""),
     passwordHash,
   };
 
@@ -150,19 +165,19 @@ async function syncAdminUserFromEnv() {
 }
 
 async function loginAdmin({ identifier, password }) {
-  const trimmedIdentifier = identifier.trim();
-  const normalized = trimmedIdentifier.toLowerCase();
+  const inputIdentifier = stripWrappingQuotes(identifier);
+  const normalized = inputIdentifier.toLowerCase();
+  const inputPassword = stripWrappingQuotes(password);
+  const envPassword = getEnvAdminPassword();
   const envAdmin = getEnvAdminProfile();
   const isEnvIdentifierMatch =
     normalized === envAdmin.loginId ||
+    normalizeIdentifier(inputIdentifier) ===
+      normalizeIdentifier(envAdmin.name) ||
     (envAdmin.email && normalized === envAdmin.email) ||
-    (envAdmin.phone && trimmedIdentifier === envAdmin.phone);
+    (envAdmin.phone && normalizePhone(inputIdentifier) === envAdmin.phone);
 
-  if (
-    env.ADMIN_PASSWORD &&
-    isEnvIdentifierMatch &&
-    password === env.ADMIN_PASSWORD
-  ) {
+  if (envPassword && isEnvIdentifierMatch && inputPassword === envPassword) {
     return {
       token: createToken(envAdmin, "env"),
       admin: sanitizeAdmin(envAdmin),
@@ -175,7 +190,7 @@ async function loginAdmin({ identifier, password }) {
     $or: [
       { loginId: normalized },
       { email: normalized },
-      { phone: trimmedIdentifier },
+      { phone: normalizePhone(inputIdentifier) },
     ],
   });
 
@@ -183,18 +198,15 @@ async function loginAdmin({ identifier, password }) {
     throw new AppError("Invalid login credentials", 401);
   }
 
-  const isValid = await bcrypt.compare(password, admin.passwordHash);
+  const isValid = await bcrypt.compare(inputPassword, admin.passwordHash);
 
   if (!isValid) {
     if (
       env.NODE_ENV !== "production" &&
-      normalized ===
-        String(env.ADMIN_ID || "")
-          .trim()
-          .toLowerCase() &&
-      password === env.ADMIN_PASSWORD
+      normalized === normalizeIdentifier(env.ADMIN_ID || "") &&
+      inputPassword === envPassword
     ) {
-      const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, 12);
+      const passwordHash = await bcrypt.hash(envPassword, 12);
       admin.passwordHash = passwordHash;
       if (!admin.loginId) {
         admin.loginId = normalized;
