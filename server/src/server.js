@@ -19,8 +19,10 @@ async function startServer() {
 }
 
 startServer().catch((error) => {
-  const detail =
-    env.NODE_ENV !== "production" && error?.message ? `: ${error.message}` : "";
-  process.stderr.write(`Failed to start server${detail}\n`);
+  const message = error?.message || "Unknown startup error";
+  process.stderr.write(`Failed to start server: ${message}\n`);
+  if (env.NODE_ENV !== "production" && error?.stack) {
+    process.stderr.write(`${error.stack}\n`);
+  }
   process.exit(1);
 });
