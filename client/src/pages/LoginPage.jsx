@@ -104,9 +104,6 @@ export function LoginPage() {
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink">
               LPG Cylinder Management
             </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              Sign in using your ID and password to continue operations.
-            </p>
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>

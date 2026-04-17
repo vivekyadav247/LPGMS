@@ -114,11 +114,7 @@ export function TransactionsPage() {
 
   return (
     <div className="space-y-6">
-      <SectionHeading
-        eyebrow="Editable table"
-        title="Data table"
-        description="Search, filter, export, edit delivery, return, and settlement entries with full ledger recalculation."
-      />
+      <SectionHeading eyebrow="Editable table" title="Data table" />
 
       <Card className="p-4 sm:p-5">
         <div className="grid gap-3 lg:grid-cols-[1.3fr_1fr_1fr_auto]">

@@ -68,7 +68,6 @@ export function CustomersPage() {
       <SectionHeading
         eyebrow="Ledger parties"
         title="Customers"
-        description="Browse all hotels, homes, restaurants, and bulk parties with live pending and credit."
         action={
           <Button
             size="lg"

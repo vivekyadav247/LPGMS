@@ -40,7 +40,6 @@ export function NewEntryPage() {
       <SectionHeading
         eyebrow="Daily operations"
         title="New delivery / return / settlement"
-        description="Choose the exact entry type, check live pending and stock, then save only the fields that matter for that visit."
         action={
           <Button
             variant="secondary"

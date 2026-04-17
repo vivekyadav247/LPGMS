@@ -40,11 +40,7 @@ export function StockPage() {
 
   return (
     <div className="space-y-6">
-      <SectionHeading
-        eyebrow="Godown control"
-        title="Stock management"
-        description="Maintain filled stock, empty stock, issued cylinders, and daily stock register."
-      />
+      <SectionHeading eyebrow="Godown control" title="Stock management" />
 
       {data.summary.isLowStock ? (
         <Card className="border-amber-200 bg-amber-50 p-5">
@@ -86,7 +82,6 @@ export function StockPage() {
           <SectionHeading
             eyebrow="Record movement"
             title="Stock inward / refill / adjustment"
-            description="Use one form for all stock bucket changes."
             compact
           />
           <StockMovementForm onSaved={loadOverview} />
@@ -96,7 +91,6 @@ export function StockPage() {
           <SectionHeading
             eyebrow="Movement history"
             title="Recent stock activity"
-            description="Customer deliveries and manual stock movements in one timeline."
             compact
           />
 
@@ -150,7 +144,6 @@ export function StockPage() {
         <SectionHeading
           eyebrow="Daily register"
           title="Last 7 days stock register"
-          description="Opening and closing balance for filled, empty, and issued buckets."
           compact
         />
 

@@ -100,10 +100,7 @@ export function DashboardPage() {
   return (
     <div className="space-y-6">
       <section>
-        <SectionHeading
-          title="Home overview"
-          description="Daily operations and analytics are merged here so team can understand business quickly from one screen."
-        />
+        <SectionHeading title="Home overview" />
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <StatCard
@@ -159,7 +156,6 @@ export function DashboardPage() {
           <SectionHeading
             eyebrow="Recent activity"
             title="Latest transactions"
-            description="Quick review of the last saved entries."
             compact
             action={
               <Link
@@ -235,7 +231,6 @@ export function DashboardPage() {
             <SectionHeading
               eyebrow="Top pending"
               title="Customers to collect empties from"
-              description="Highest empty-cylinder balance in market."
               compact
             />
             <div className="space-y-3">
@@ -329,11 +324,7 @@ export function DashboardPage() {
       </section>
 
       <section>
-        <SectionHeading
-          eyebrow="All-time totals"
-          title="Business analytics"
-          description="Important totals from complete ledger history."
-        />
+        <SectionHeading eyebrow="All-time totals" title="Business analytics" />
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
