@@ -123,15 +123,7 @@ export function AppShell({ children }) {
             <div className="surface-muted overflow-hidden">
               <div className="flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
                 <div className="min-w-0">
-                  <div className="mb-2 lg:hidden">
-                    <img
-                      src="/lpgms-logo.svg"
-                      alt="LPGMS logo"
-                      className="h-11 w-auto"
-                      loading="eager"
-                    />
-                  </div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-accent shadow-panel">
+                  <div className="hidden items-center gap-2 rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-accent shadow-panel sm:inline-flex">
                     {isOffline ? (
                       <WifiOff size={12} />
                     ) : (
@@ -139,10 +131,21 @@ export function AppShell({ children }) {
                     )}
                     {isOffline ? "Offline" : "Live workspace"}
                   </div>
-                  <h2 className="mt-2 truncate text-xl font-bold tracking-tight text-ink sm:mt-3 sm:text-[2rem]">
-                    {currentItem?.label || "Operations"}
-                  </h2>
-                  <p className="mt-1 text-sm leading-6 text-slate-500">
+                  <div className="mt-2 flex items-center justify-between gap-3 sm:mt-3">
+                    <h2 className="truncate text-2xl font-bold tracking-tight text-ink sm:text-[2rem]">
+                      {currentItem?.label || "Operations"}
+                    </h2>
+                    <img
+                      src="/lpgms-icon.svg"
+                      alt="LPGMS icon"
+                      className="h-12 w-12 shrink-0 rounded-xl border border-accent/15 bg-white p-1.5 shadow-panel lg:hidden"
+                      loading="eager"
+                    />
+                  </div>
+                  <p className="mt-1 text-xs font-medium text-slate-500 sm:hidden">
+                    {isOffline ? "Offline mode" : "Live workspace"}
+                  </p>
+                  <p className="mt-1 hidden text-sm leading-6 text-slate-500 sm:block">
                     Fast data entry, clean ledger tracking, and stock-safe
                     operations.
                   </p>
