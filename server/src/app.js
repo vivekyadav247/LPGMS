@@ -23,18 +23,23 @@ function normalizeOrigin(value) {
     return "";
   }
 
+  const unquoted = raw.replace(/^['\"]|['\"]$/g, "");
+
   try {
-    return new URL(raw).origin.toLowerCase();
+    return new URL(unquoted).origin.toLowerCase();
   } catch (_error) {
-    return raw.replace(/\/+$/, "").toLowerCase();
+    return unquoted.replace(/\/+$/, "").toLowerCase();
   }
 }
 
-const allowedOrigins = new Set(
-  env.CLIENT_URL.split(",")
-    .map((value) => normalizeOrigin(value))
-    .filter(Boolean),
-);
+function parseAllowedOrigins(value) {
+  return String(value || "")
+    .split(/[\n,;]+/)
+    .map((item) => normalizeOrigin(item))
+    .filter(Boolean);
+}
+
+const allowedOrigins = new Set(parseAllowedOrigins(env.CLIENT_URL));
 const localhostOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i;
 
 const corsOptions = {
