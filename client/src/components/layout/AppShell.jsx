@@ -141,6 +141,15 @@ export function AppShell({ children }) {
                       Quick add entry
                     </Button>
                   </Link>
+
+                  <Button
+                    variant="secondary"
+                    className="w-full sm:w-auto lg:hidden"
+                    onClick={logout}
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </Button>
                 </div>
               </div>
             </div>
